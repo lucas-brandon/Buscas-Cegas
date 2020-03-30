@@ -1,0 +1,355 @@
+/******************************************************************************
+PEL202–Fundamentos da Inteligência Artificial
+Exercício 1
+Aluno: Lucas Brandon de Oliveira Tenório
+Entrega: 18/03/2020
+*******************************************************************************/
+
+#include <iostream>
+#include <cstdlib>
+#include <stack>
+#include <queue>
+#include <utility>
+
+using namespace std;
+
+
+//Função para simular a possibilidade de encher o vaso de 3 litros
+//e retorna o estado dos dois vasos em uma estrutura de "par"
+pair<int, int> Enche3(int vaso3, int vaso4){
+    vaso3 = 3;
+   
+    return make_pair(vaso3, vaso4);
+}
+
+//Função para simular a possibilidade de esvaziar o vaso de 3 litros
+//e retorna o estado dos dois vasos em uma estrutura de "par"
+pair<int, int> Esvazia3(int vaso3, int vaso4){
+    vaso3 = 0;
+   
+    return make_pair(vaso3, vaso4);
+}
+
+//Função para simular a possibilidade de transferir o conteúdo do vaso de 3 litros para o de 4 litros
+//e retorna o estado dos dois vasos em uma estrutura de "par"
+pair<int, int> Transfere3para4(int vaso3, int vaso4){
+   
+    //Variável auxiliar para representar o espaço vazio do vaso de 4 litros
+    int aux = 4 - vaso4;
+
+    if(vaso3 <= aux){
+        vaso4 += vaso3;
+        vaso3 = 0;
+    }
+       
+    else {
+        vaso4 += aux;
+        vaso3 -= aux;
+    }
+   
+    return make_pair(vaso3, vaso4);
+       
+}
+
+//Função para simular a possibilidade de encher o vaso de 4 litros
+//e retorna o estado dos dois vasos em uma estrutura de "par"
+pair<int, int> Enche4(int vaso3, int vaso4){
+    vaso4 = 4;
+   
+    return make_pair(vaso3, vaso4);
+}
+
+//Função para simular a possibilidade de esvaziar o vaso de 4 litros
+//e retorna o estado dos dois vasos em uma estrutura de "par"
+pair<int, int> Esvazia4(int vaso3, int vaso4){
+    vaso4 = 0;
+   
+    return make_pair(vaso3, vaso4);
+}
+
+//Função para simular a possibilidade de transferir o conteúdo do vaso de 4 litros para o de 3 litros
+//e retorna o estado dos dois vasos em uma estrutura de "par"
+pair<int, int> Transfere4para3(int vaso3, int vaso4){
+   
+    //Variável auxiliar para representar o espaço vazio do vaso de 3 litros
+    int aux = 3 - vaso3;
+
+    if(vaso4 <= aux){
+        vaso3 += vaso4;
+        vaso4 = 0;
+    }
+       
+    else {
+        vaso3 += aux;
+        vaso4 -= aux;
+    }
+   
+    return make_pair(vaso3, vaso4);
+       
+}
+
+//Função para gerar os estados dos vasos de 3 e 4 litros, seguindo a lógica da busca BFS.
+//Cada novo estado é avaliado se ele ja foi visto.
+//Se o estado não foi visto, ele é adicionado na fila do BFS.
+void gerarEstadosBFS(pair<int, int> &estadoAtual, queue<pair<int, int> > &q, int visitados[4][5], int contEstado){
+   
+    //variável para testar os novos estados a partir do estado atual
+    pair <int,int> novoEstado;
+   
+    novoEstado = Enche3(estadoAtual.first, estadoAtual.second);
+   
+    //Se o estado nunca foi encontrado, ele é adicionado na fila e a matriz de visitados
+    //indica o número do pai desse estado novo
+    if(visitados[novoEstado.first][novoEstado.second] == -1){
+        visitados[novoEstado.first][novoEstado.second] = contEstado;
+        q.push(novoEstado);
+    }
+   
+    cout << "adj: " << novoEstado.first << " " <<novoEstado.second<<"\n";
+   
+    novoEstado = Esvazia3(estadoAtual.first, estadoAtual.second);
+   
+    if(visitados[novoEstado.first][novoEstado.second] == -1){
+        visitados[novoEstado.first][novoEstado.second] = contEstado;
+        q.push(novoEstado);
+    }
+   
+    cout << "adj: " << novoEstado.first << " " <<novoEstado.second<<"\n";
+   
+    novoEstado = Transfere3para4(estadoAtual.first, estadoAtual.second);
+   
+    if(visitados[novoEstado.first][novoEstado.second] == -1){
+        visitados[novoEstado.first][novoEstado.second] = contEstado;
+        q.push(novoEstado);
+    }
+   
+    cout << "adj: " << novoEstado.first << " " <<novoEstado.second<<"\n";
+   
+    novoEstado = Enche4(estadoAtual.first, estadoAtual.second);
+   
+    if(visitados[novoEstado.first][novoEstado.second] == -1){
+        visitados[novoEstado.first][novoEstado.second] = contEstado;
+        q.push(novoEstado);
+    }
+   
+    cout << "adj: " << novoEstado.first << " " <<novoEstado.second<<"\n";
+   
+    novoEstado = Esvazia4(estadoAtual.first, estadoAtual.second);
+   
+    if(visitados[novoEstado.first][novoEstado.second] == -1){
+        visitados[novoEstado.first][novoEstado.second] = contEstado;
+        q.push(novoEstado);
+    }
+   
+    cout << "adj: " << novoEstado.first << " " <<novoEstado.second<<"\n";
+   
+    novoEstado = Transfere4para3(estadoAtual.first, estadoAtual.second);
+   
+    if(visitados[novoEstado.first][novoEstado.second] == -1){
+        visitados[novoEstado.first][novoEstado.second] = contEstado;
+        q.push(novoEstado);
+    }
+   
+    cout << "adj: " << novoEstado.first << " " <<novoEstado.second<<"\n";
+   
+   //Quando todos os estados possíveis forem verificados, a função retorna para o BFS com a fila atualizada
+}
+
+//Função para gerar os estados dos vasos de 3 e 4 litros, seguindo a lógica da busca DFS.
+//Cada novo estado é avaliado se ele ja foi visto.
+//Se o estado não foi visto, ele é adicionado na pilha do DFS e é verificado imediatamente.
+void gerarEstadosDFS(pair<int, int> &estadoAtual, stack<pair<int, int> > &p, int visitados[4][5], int contEstado){
+   
+    //variável para testar os novos estados a partir do estado atual
+    pair <int,int> novoEstado;
+   
+    novoEstado = Enche3(estadoAtual.first, estadoAtual.second);
+   
+    //cout << "atual dfs: " << estadoAtual.first << " " <<estadoAtual.second<<endl;
+   
+    //Se o estado nunca foi encontrado, ele é adicinado na pilha e a matriz de visitados
+    //indica o número do pai desse estado novo.
+    //Em cada estado gerado, ele se torna o topo da pilha, então a função retorna para a busca DFS
+    //para verificar o estado do topo da pilha imediatamente
+    if(visitados[novoEstado.first][novoEstado.second] == -1){
+        visitados[novoEstado.first][novoEstado.second] = contEstado;
+        p.push(novoEstado);
+        cout << "adj: " << novoEstado.first << " " <<novoEstado.second<<"\n";
+        return;
+    }
+   
+    novoEstado = Esvazia3(estadoAtual.first, estadoAtual.second);
+   
+    if(visitados[novoEstado.first][novoEstado.second] == -1){
+        visitados[novoEstado.first][novoEstado.second] = contEstado;
+        p.push(novoEstado);
+        cout << "adj: " << novoEstado.first << " " <<novoEstado.second<<"\n";
+        return;
+    }
+   
+    novoEstado = Transfere3para4(estadoAtual.first, estadoAtual.second);
+   
+    if(visitados[novoEstado.first][novoEstado.second] == -1){
+        visitados[novoEstado.first][novoEstado.second] = contEstado;
+        p.push(novoEstado);
+        cout << "adj: " << novoEstado.first << " " <<novoEstado.second<<"\n";
+        return;
+    }
+   
+    novoEstado = Enche4(estadoAtual.first, estadoAtual.second);
+   
+    if(visitados[novoEstado.first][novoEstado.second] == -1){
+        visitados[novoEstado.first][novoEstado.second] = contEstado;
+        p.push(novoEstado);
+        cout << "adj: " << novoEstado.first << " " <<novoEstado.second<<"\n";
+        return;
+    }
+   
+    novoEstado = Esvazia4(estadoAtual.first, estadoAtual.second);
+   
+    if(visitados[novoEstado.first][novoEstado.second] == -1){
+        visitados[novoEstado.first][novoEstado.second] = contEstado;
+        p.push(novoEstado);
+        cout << "adj: " << novoEstado.first << " " <<novoEstado.second<<"\n";
+        return;
+    }
+   
+    novoEstado = Transfere4para3(estadoAtual.first, estadoAtual.second);
+   
+    if(visitados[novoEstado.first][novoEstado.second] == -1){
+        visitados[novoEstado.first][novoEstado.second] = contEstado;
+        p.push(novoEstado);
+        cout << "adj: " << novoEstado.first << " " <<novoEstado.second<<"\n";
+        return;
+    }
+    
+    //Caso não seja possível criar novos estados a partir do estado atual,
+    //o estado no topo da pilha é retirado.
+    p.pop();
+   
+}
+
+void bfs(int v3, int v4){
+   
+    int contEstado = 1;
+   
+    //Vetor de estados usado para associar o estado dos vasos a uma posição do vetor,
+    //que será usado para imprimir o caminho do estado incial até o final
+    vector<pair<int, int> > estados;
+   
+    int visitados[4][5];
+   
+    for(int i = 0; i < 4; i++)
+        for(int j = 0; j < 5; j++)
+            visitados[i][j] = -1;
+           
+   
+    queue<pair<int, int> > q;
+   
+    pair <int,int> estadoAtual = make_pair(v3, v4);
+   
+    q.push(estadoAtual);
+    visitados[v3][v4] = 0;
+    estados.push_back(estadoAtual);
+   
+   
+    //Busca BFS, enquanto a fila não está vazia
+    while(!q.empty()){
+       
+        estadoAtual = q.front();
+        q.pop();
+        estados.push_back(estadoAtual);
+       
+        //Se nenhum vaso contém 2 litros, procure novos estados
+        if(estadoAtual.first != 2 && estadoAtual.second != 2){
+            cout << "atual: " << estadoAtual.first << " " <<estadoAtual.second<<"\n";
+           
+            gerarEstadosBFS(estadoAtual, q, visitados, contEstado);
+           
+            contEstado++;      
+           
+        }
+
+    }
+   
+    //Para imprimir o caminho percorrido pela busca, o pai do estado final é verificado,
+    //até o estado inicial
+    cout << "caminho do BFS começando do estado final ate o inicial\n";
+    while(visitados[estadoAtual.first][estadoAtual.second] > 0){
+        cout <<  estadoAtual.first << " " <<estadoAtual.second<<"\n";
+        estadoAtual = estados[visitados[estadoAtual.first][estadoAtual.second]];
+        
+   }
+
+}
+
+void dfs(int v3, int v4){
+
+    int contEstado = 1;
+   
+    //Vetor de estados usado para associar o estado dos vasos a uma posição do vetor,
+    //que será usado para imprimir o caminho do estado final até o inicial
+    vector<pair<int, int> > estados;
+   
+    int visitados[4][5];
+   
+    for(int i = 0; i < 4; i++)
+        for(int j = 0; j < 5; j++)
+            visitados[i][j] = -1;
+           
+   
+    stack<pair<int, int> > p;
+   
+    pair <int,int> estadoAtual = make_pair(v3, v4);
+   
+    p.push(estadoAtual);
+    visitados[v3][v4] = 0;
+    estados.push_back(estadoAtual);
+   
+    //Enquando a pilha não está vazia e nenhum vaso possui 2 litros
+    while(!p.empty() && estadoAtual.first != 2 && estadoAtual.second != 2){
+       
+        estadoAtual = p.top();
+        estados.push_back(estadoAtual);
+       
+        //Se nenhum vaso não possui 2 litros dentro dele, procure novos estados
+        //if(estadoAtual.first != 2 || estadoAtual.second != 2){
+        cout << "atual: " << estadoAtual.first << " " <<estadoAtual.second<<"\n";
+           
+        gerarEstadosDFS(estadoAtual, p, visitados, contEstado);
+           
+        contEstado++;      
+           
+        //}
+        
+        
+    }
+   
+    cout << "fim: " << estadoAtual.first << " " <<estadoAtual.second<<"\n\n";
+   
+    //Para imprimir o caminho percorrido pela busca, o pai do estado final é verificado,
+    //até o estado inicial
+    cout << "caminho do DFS começando do estado final ate o inicial\n";
+    while(visitados[estadoAtual.first][estadoAtual.second] > 0){
+        cout <<  estadoAtual.first << " " <<estadoAtual.second<<endl;
+        estadoAtual = estados[visitados[estadoAtual.first][estadoAtual.second]];
+        
+   }
+   cout <<  estadoAtual.first << " " <<estadoAtual.second<<"\n";
+
+   
+}
+
+//O programa realiza as buscas propostas no exercício, BFS e DFS, para 
+//chegar no estado onde algum dos dois vasos tenha 2 litros.
+//Cada busca recebe a configuração do estado inicial, quantos litros o vaso com capacidade de até 3 litros
+//possui e quantos litros o vaso de 4 litros possui. O caminho é exibido dentro de cada busca.
+int main()
+{
+   
+    bfs(0, 0);
+    dfs(0, 0);
+   
+
+    return 0;
+}
